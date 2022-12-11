@@ -157,7 +157,7 @@ defmodule Day2Part1Test do
   use ExUnit.Case
   doctest D2P1
 
-  test "should calculate calories correctly" do
+  test "should calculate total score correctly" do
     assert D2P1.solution(Utils.load_input_data(2)) == 14375
   end
 end
@@ -227,7 +227,7 @@ defmodule Day2Part2Test do
   use ExUnit.Case
   doctest D2P2
 
-  test "should calculate calories correctly" do
+  test "should calculate total score correctly" do
     assert D2P2.solution(Utils.load_input_data(2)) == 10274
   end
 end
