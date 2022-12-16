@@ -15,7 +15,7 @@ A helper function to load the input data
 ```elixir
 defmodule Utils do
   def load_input_data(day) do
-    "#{__DIR__}/../data/day#{day}.txt"
+    "#{__DIR__}/data/day#{day}.txt"
     |> Path.expand()
     |> File.read!()
     |> String.trim()
@@ -178,9 +178,9 @@ defmodule D2P2 do
     |> Enum.sum()
   end
 
-  defp rps(data) do
-    first = String.at(data, 0)
-    second = String.at(data, -1)
+  defp rps(input) do
+    first = String.at(input, 0)
+    second = String.at(input, -1)
 
     case second do
       "Y" ->
@@ -194,21 +194,21 @@ defmodule D2P2 do
     end
   end
 
-  defp choose_shape(strat, shape) do
-    case strat do
-      :loss ->
-        case shape do
-          "A" -> "C"
-          "B" -> "A"
-          "C" -> "B"
-        end
+  # Choose shape that will lead to win
+  defp choose_shape(:win, shape) do
+    case shape do
+      "A" -> "B"
+      "B" -> "C"
+      "C" -> "A"
+    end
+  end
 
-      :win ->
-        case shape do
-          "A" -> "B"
-          "B" -> "C"
-          "C" -> "A"
-        end
+  # Choose shape that will lead to loss
+  defp choose_shape(:loss, shape) do
+    case shape do
+      "A" -> "C"
+      "B" -> "A"
+      "C" -> "B"
     end
   end
 
@@ -229,6 +229,60 @@ defmodule Day2Part2Test do
 
   test "should calculate total score correctly" do
     assert D2P2.solution(Utils.load_input_data(2)) == 10274
+  end
+end
+
+ExUnit.run()
+```
+
+## Day 3: Rucksack Reorganization
+
+## Part 1
+
+```elixir
+defmodule D3P1 do
+  def solution(data) do
+    priority = gen_priority()
+
+    data
+    |> Enum.map(fn el ->
+      el = split(el)
+      el = String.myers_difference(elem(el, 0), elem(el, 1))[:eq]
+      el = if String.length(el) > 1, do: String.at(el, 0), else: el
+      priority[el]
+    end)
+    |> Enum.sum()
+  end
+
+  defp split(string) do
+    len = String.length(string) |> div(2)
+    String.split_at(string, len)
+  end
+
+  defp gen_priority do
+    lowercase =
+      for x <- 97..122 do
+        %{List.to_string([x]) => x - 96}
+      end
+
+    uppercase =
+      for x <- 65..90 do
+        %{List.to_string([x]) => x - (64 - 26)}
+      end
+
+    priority = lowercase ++ uppercase
+    Enum.reduce(priority, %{}, fn x, acc -> Map.merge(x, acc) end)
+  end
+end
+```
+
+```elixir
+defmodule Day3Part1Test do
+  use ExUnit.Case
+  doctest D3P1
+
+  test "should calculate sum of the priorities correctly" do
+    assert D3P1.solution(Utils.load_input_data(3)) == 7889
   end
 end
 
